@@ -4,18 +4,21 @@ import java.util.Scanner;
 import view.ClientView;
 import view.ContratView;
 import view.SinistreView;
+import view.ConseillerView;
 
 public class Main {
 
     private ClientView clientView;
     private ContratView contratView;
     private SinistreView sinistreView;
+    private ConseillerView conseillerView;
     private Scanner scanner;
 
     public Main() throws SQLException {
         this.clientView = new ClientView();
         this.contratView = new ContratView();
         this.sinistreView = new SinistreView();
+        this.conseillerView = new ConseillerView();
         this.scanner = new Scanner(System.in);
     }
 
@@ -23,9 +26,10 @@ public class Main {
         int choix;
         do {
             System.out.println("\n=== MENU PRINCIPAL ===");
-            System.out.println("1. Gestion des Clients");
-            System.out.println("2. Gestion des Contrats");
-            System.out.println("3. Gestion des Sinistres");
+            System.out.println("1. Gesttion des Conseillers");
+            System.out.println("2. Gestion des Clients");
+            System.out.println("3. Gestion des Contrats");
+            System.out.println("4. Gestion des Sinistres");
             System.out.println("0. Quitter");
             System.out.print("Choix: ");
             choix = scanner.nextInt();
@@ -33,12 +37,15 @@ public class Main {
 
             switch (choix) {
                 case 1:
-                    clientView.menu();
+                    conseillerView.menu();
                     break;
                 case 2:
-                    contratView.menu();
+                    clientView.menu();
                     break;
                 case 3:
+                    contratView.menu();
+                    break;
+                case 4 :
                     sinistreView.menu();
                     break;
                 case 0:
