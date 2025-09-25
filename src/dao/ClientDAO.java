@@ -19,7 +19,7 @@ public class ClientDAO {
 
     // Create
     public void create(Client client) throws SQLException {
-        String sql = "INSERT INTO client ( nom, prenom, email, conseiller_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client ( nom, prenom, email, conseiller_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, client.getNom());
             stmt.setString(2, client.getPrenom());
@@ -63,13 +63,16 @@ public class ClientDAO {
     }
 
     // Delete
-    public void delete(int id) throws SQLException {
+    public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM client WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
+
+
 
     public List<Client> getAll() throws SQLException {
         List<Client> clients = new ArrayList<>();
@@ -77,16 +80,20 @@ public class ClientDAO {
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
+                int conseillerId = rs.getInt("conseiller_id");
+                Conseiller conseiller = (conseillerId != 0) ? new Conseiller(conseillerId, "", "", "") : null;
+
                 Client client = new Client(
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getString("prenom"),
                         rs.getString("email"),
-                        null
+                        conseiller
                 );
                 clients.add(client);
             }
         }
         return clients;
     }
+
 }

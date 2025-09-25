@@ -1,5 +1,6 @@
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import view.ClientView;
 import view.ContratView;
@@ -26,14 +27,21 @@ public class Main {
         int choix;
         do {
             System.out.println("\n=== MENU PRINCIPAL ===");
-            System.out.println("1. Gesttion des Conseillers");
+            System.out.println("1. Gestion des Conseillers");
             System.out.println("2. Gestion des Clients");
             System.out.println("3. Gestion des Contrats");
             System.out.println("4. Gestion des Sinistres");
             System.out.println("0. Quitter");
             System.out.print("Choix: ");
-            choix = scanner.nextInt();
-            scanner.nextLine(); // Consommer le retour à la ligne
+
+            try {
+                choix = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+                choix = -1;
+            }
 
             switch (choix) {
                 case 1:

@@ -54,7 +54,8 @@ public class Client extends Person {
 
     @Override
     public String toString() {
-        return super.toString() + " | Nb contrats: " + contrats.size() +
-                " | Conseiller: " + (conseiller != null ? conseiller.getNom() : "Aucun");
+        return getNom() + " " + getPrenom()   +
+                " | Nb contrats: " + contrats.size() ;
     }
+
 }

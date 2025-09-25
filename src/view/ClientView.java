@@ -6,15 +6,16 @@ import service.ClientService;
 import service.ConseillerService;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
 public class ClientView {
 
-    private ClientService clientService;
-    private ConseillerService conseillerService;
-    private Scanner scanner;
+    private final ClientService clientService;
+    private final ConseillerService conseillerService;
+    private final Scanner scanner;
 
     public ClientView() throws SQLException {
         this.clientService = new ClientService();
@@ -33,72 +34,104 @@ public class ClientView {
             System.out.println("5. Afficher les clients d'un conseiller");
             System.out.println("0. Retour");
             System.out.print("Choix: ");
-            choix = scanner.nextInt();
-            scanner.nextLine(); // Consommer le retour à la ligne
+
+            try {
+                choix = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+                choix = -1;
+            }
 
             switch (choix) {
-                case 1 :
+                case 1:
                     ajouterClient();
-                    break ;
-                case 2 :
+                    break;
+                case 2:
                     supprimerClient();
                     break;
-                case 3 :
+                case 3:
                     rechercherParId();
                     break;
-                case 4 :
+                case 4:
                     rechercherParNom();
                     break;
-                case 5 :
+                case 5:
                     afficherClientsParConseiller();
                     break;
+                case 0:
+                    System.out.println("Retour au menu principal...");
+                    break;
+                default:
+                    System.out.println("Choix invalide, réessayez !");
             }
         } while (choix != 0);
     }
 
+
+    private int lireEntier(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                int valeur = scanner.nextInt();
+                scanner.nextLine(); // vider le buffer
+                return valeur;
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private String lireTexte(String message) {
+        String input;
+        do {
+            System.out.print(message);
+            input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                System.out.println("Ce champ ne peut pas être vide !");
+            }
+        } while (input.isEmpty());
+        return input;
+    }
+
     private void ajouterClient() throws SQLException {
-        // Afficher tous les conseillers
+
         List<Conseiller> conseillers = conseillerService.getAllConseillers();
         System.out.println("Liste des conseillers :");
         for (Conseiller c : conseillers) {
             System.out.println(c.getId() + " - " + c.getNom() + " " + c.getPrenom());
         }
 
-        System.out.print("Nom: ");
-        String nom = scanner.nextLine();
-        System.out.print("Prenom: ");
-        String prenom = scanner.nextLine();
-        System.out.print("Email: ");
-        String email = scanner.nextLine();
-
-        System.out.print("ID du conseiller (0 si aucun): ");
-        int conseillerId = scanner.nextInt();
-        scanner.nextLine();
+        String nom = lireTexte("Nom: ");
+        String prenom = lireTexte("Prénom: ");
+        String email = lireTexte("Email: ");
+        int conseillerId = lireEntier("ID du conseiller (0 si aucun): ");
 
         Conseiller conseiller = null;
         if (conseillerId != 0) {
             conseiller = conseillerService.chercherParId(conseillerId).orElse(null);
         }
 
-        // ID = 0 pour auto-increment
         Client c = new Client(0, nom, prenom, email, conseiller);
         clientService.ajouterClient(c);
-        System.out.println("Client ajouté avec succès ");
+        System.out.println("Client ajouté avec succès !");
     }
 
     private void supprimerClient() throws SQLException {
-        System.out.print("ID du client à supprimer: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        clientService.supprimerClient(id);
-        System.out.println("Client supprimé ");
+        int id = lireEntier("ID du client à supprimer: ");
+        boolean supprime = clientService.supprimerClient(id);
+        if (supprime) {
+            System.out.println("Client supprimé !");
+        } else {
+            System.out.println("Aucun client trouvé avec l'ID " + id);
+        }
     }
 
-    private void rechercherParId() throws SQLException {
-        System.out.print("ID du client: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
 
+    private void rechercherParId() throws SQLException {
+        int id = lireEntier("ID du client: ");
         Optional<Client> client = clientService.chercherParId(id);
 
         if (client.isPresent()) {
@@ -108,10 +141,8 @@ public class ClientView {
         }
     }
 
-
     private void rechercherParNom() throws SQLException {
-        System.out.print("Nom du client: ");
-        String nom = scanner.nextLine();
+        String nom = lireTexte("Nom du client: ");
         List<Client> clients = clientService.chercherParNom(nom);
         if (clients.isEmpty()) {
             System.out.println("Aucun client trouvé avec ce nom.");
@@ -121,9 +152,7 @@ public class ClientView {
     }
 
     private void afficherClientsParConseiller() throws SQLException {
-        System.out.print("ID du conseiller: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id = lireEntier("ID du conseiller: ");
         List<Client> clients = clientService.clientsParConseiller(id);
         if (clients.isEmpty()) {
             System.out.println("Aucun client pour ce conseiller.");

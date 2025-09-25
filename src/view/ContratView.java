@@ -8,6 +8,7 @@ import service.ContratService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -34,21 +35,32 @@ public class ContratView {
             System.out.println("4. Afficher les contrats d'un client");
             System.out.println("0. Retour");
             System.out.print("Choix: ");
-            choix = scanner.nextInt();
-            scanner.nextLine(); // Consommer le retour à la ligne
-
+            try {
+                choix = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+                choix = -1;
+            }
             switch (choix) {
-                case 1 :
+                case 1:
                     ajouterContrat();
                     break;
-                case 2 :
+                case 2:
                     supprimerContrat();
                     break;
-                case 3 :rechercherParId();
+                case 3:
+                    rechercherParId();
                     break;
-                case 4 :
+                case 4:
                     afficherContratsParClient();
                     break;
+                case 0:
+                    System.out.println("Retour au menu principal...");
+                    break;
+                default:
+                    System.out.println("Choix invalide, réessayez !");
             }
         } while (choix != 0);
     }
@@ -81,11 +93,13 @@ public class ContratView {
             return;
         }
 
-        System.out.print("Date début (YYYY-MM-DD): ");
-        LocalDate dateDebut = LocalDate.parse(scanner.nextLine());
+        LocalDate dateDebut = saisirDate("Date début (YYYY-MM-DD): ");
+        LocalDate dateFin = saisirDate("Date fin (YYYY-MM-DD): ");
 
-        System.out.print("Date fin (YYYY-MM-DD): ");
-        LocalDate dateFin = LocalDate.parse(scanner.nextLine());
+        if (dateFin.isBefore(dateDebut)) {
+            System.out.println("La date de fin doit être après la date de début !");
+            return;
+        }
 
         Contrat contrat = new Contrat(0, type, dateDebut, dateFin, client);
         contratService.ajouterContrat(contrat);
@@ -122,6 +136,18 @@ public class ContratView {
             System.out.println("Aucun contrat pour ce client.");
         } else {
             contrats.forEach(System.out::println);
+        }
+    }
+
+    private LocalDate saisirDate(String message) {
+        while (true) {
+            System.out.print(message);
+            String input = scanner.nextLine();
+            try {
+                return LocalDate.parse(input);
+            } catch (Exception e) {
+                System.out.println("Format invalide ! Utilisez le format YYYY-MM-DD.");
+            }
         }
     }
 }

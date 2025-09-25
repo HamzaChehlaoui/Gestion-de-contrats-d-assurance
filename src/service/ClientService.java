@@ -23,9 +23,10 @@ public class ClientService {
         clientDAO.create(c);
     }
 
-    public void supprimerClient(int id) throws SQLException {
-        clientDAO.delete(id);
+    public boolean supprimerClient(int id) throws SQLException {
+        return clientDAO.delete(id);
     }
+
 
     public Optional<Client> chercherParId(int id) throws SQLException {
         return clientDAO.read(id);
@@ -42,7 +43,8 @@ public class ClientService {
     public List<Client> clientsParConseiller(int conseillerId) throws SQLException {
         return clientDAO.getAll()
                 .stream()
-                .filter(c -> c.getConseiller().getId() == conseillerId)
+                .filter(c -> c.getConseiller() != null && c.getConseiller().getId() == conseillerId)
                 .collect(Collectors.toList());
     }
+
 }

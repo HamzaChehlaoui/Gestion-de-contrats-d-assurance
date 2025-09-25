@@ -8,6 +8,7 @@ import service.SinistreService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -35,25 +36,35 @@ public class SinistreView {
             System.out.println("5. Afficher les sinistres par client");
             System.out.println("0. Retour");
             System.out.print("Choix: ");
-            choix = scanner.nextInt();
-            scanner.nextLine(); // Consommer le retour à la ligne
-
+            try {
+                choix = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+                choix = -1;
+            }
             switch (choix) {
-                case 1 :
+                case 1:
                     ajouterSinistre();
                     break;
-                case 2 :
+                case 2:
                     supprimerSinistre();
                     break;
-                case 3 :
+                case 3:
                     rechercherParId();
                     break;
-                case 4 :
+                case 4:
                     afficherParContrat();
                     break;
-                case 5 :
+                case 5:
                     afficherParClient();
                     break;
+                case 0:
+                    System.out.println("Retour au menu principal...");
+                    break;
+                default:
+                    System.out.println("Choix invalide, réessayez !");
             }
         } while (choix != 0);
     }
@@ -86,14 +97,15 @@ public class SinistreView {
             return;
         }
 
-        System.out.print("Date début (YYYY-MM-DD): ");
-        LocalDate dateDebut = LocalDate.parse(scanner.nextLine());
+        LocalDate dateDebut = saisirDate("Date début (YYYY-MM-DD): ");
+        LocalDate dateFin = saisirDate("Date fin (YYYY-MM-DD): ");
 
-        System.out.print("Date fin (YYYY-MM-DD): ");
-        LocalDate dateFin = LocalDate.parse(scanner.nextLine());
+        if (dateFin.isBefore(dateDebut)) {
+            System.out.println("La date de fin doit être après la date de début !");
+            return;
+        }
 
-        System.out.print("Montant: ");
-        double montant = Double.parseDouble(scanner.nextLine());
+        double montant = saisirMontant("Montant: ");
 
         System.out.print("Description: ");
         String description = scanner.nextLine();
@@ -144,6 +156,31 @@ public class SinistreView {
             System.out.println("Aucun sinistre pour ce client.");
         } else {
             sinistres.forEach(System.out::println);
+        }
+    }
+
+    // === Helpers sécurisés ===
+    private LocalDate saisirDate(String message) {
+        while (true) {
+            System.out.print(message);
+            String input = scanner.nextLine();
+            try {
+                return LocalDate.parse(input);
+            } catch (Exception e) {
+                System.out.println("Format invalide ! Utilisez le format YYYY-MM-DD.");
+            }
+        }
+    }
+
+    private double saisirMontant(String message) {
+        while (true) {
+            System.out.print(message);
+            String input = scanner.nextLine();
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+            }
         }
     }
 }

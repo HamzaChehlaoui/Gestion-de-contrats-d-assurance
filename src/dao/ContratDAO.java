@@ -16,7 +16,7 @@ public class ContratDAO {
     }
 
     public void create(Contrat contrat) throws SQLException {
-        String sql = "INSERT INTO contrat ( type_contrat, date_debut, date_fin, client_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO contrat ( type_contrat, date_debut, date_fin, client_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, contrat.getTypeContrat().name());
             stmt.setDate(2, Date.valueOf(contrat.getDateDebut()));

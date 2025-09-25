@@ -17,7 +17,7 @@ public class SinistreDAO {
     }
 
     public void create(Sinistre sinistre) throws SQLException {
-        String sql = "INSERT INTO sinistre (type_sinistre, date_debut, date_fin, montant, description, contrat_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO sinistre (type_sinistre, date_debut, date_fin, montant, description, contrat_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, sinistre.getTypeSinistre().name());
             stmt.setDate(2, Date.valueOf(sinistre.getDateDebut()));
