@@ -106,9 +106,13 @@ public class ConseillerView {
     }
 
     private void supprimer() throws SQLException {
-        int id = lireEntier("ID du conseiller à supprimer: ");
-        conseillerService.supprimerConseiller(id);
-        System.out.println("Conseiller supprimé !");
+        int id = lireEntier("ID du consieller à supprimer: ");
+        boolean supprime = conseillerService.supprimerConseiller(id);
+        if (supprime) {
+            System.out.println("Conseiller supprimé !");
+        } else {
+            System.out.println("Aucun conseiller trouvé avec l'ID " + id);
+        }
     }
 
     private void rechercherParId() throws SQLException {

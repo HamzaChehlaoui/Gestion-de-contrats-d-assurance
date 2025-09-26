@@ -39,7 +39,7 @@ public class SinistreService {
     public List<Sinistre> sinistresParContrat(int contratId) throws SQLException {
         return sinistreDAO.getAll()
                 .stream()
-                .filter(s -> s.getContrat().getId() == contratId)
+                .filter(s -> s.getContrat() != null && s.getContrat().getId() == contratId)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +53,7 @@ public class SinistreService {
     public List<Sinistre> sinistresParClient(int clientId) throws SQLException {
         return sinistreDAO.getAll()
                 .stream()
-                .filter(s -> s.getContrat().getClient().getId() == clientId)
+                .filter(s -> s.getContrat() !=null && s.getContrat().getClient().getId() == clientId)
                 .collect(Collectors.toList());
     }
 

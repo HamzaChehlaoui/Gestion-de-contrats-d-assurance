@@ -1,5 +1,6 @@
 package dao;
 
+import model.Client;
 import model.Contrat;
 import model.enums.TypeContrat;
 import java.sql.*;
@@ -10,6 +11,7 @@ public class ContratDAO {
 
 
     private Connection conn;
+    ClientDAO clientDAO = new ClientDAO();
 
     public ContratDAO() throws SQLException {
         this.conn = DBConnectionSingleton.getInstance().getConnection();
@@ -33,7 +35,6 @@ public class ContratDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Contrat contrat = new Contrat(
-                        rs.getInt("id"),
                         TypeContrat.valueOf(rs.getString("type_contrat")),
                         rs.getDate("date_debut").toLocalDate(),
                         rs.getDate("date_fin").toLocalDate(),
@@ -57,11 +58,12 @@ public class ContratDAO {
         }
     }
 
-    public void delete(int id) throws SQLException {
+    public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM contrat WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
@@ -71,16 +73,23 @@ public class ContratDAO {
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
+                int clientId = rs.getInt("client_id");
+                Client client = null;
+                if (clientId != 0) {
+                    client = clientDAO.read(clientId).orElse(null);
+                }
+
                 Contrat contrat = new Contrat(
-                        rs.getInt("id"),
                         TypeContrat.valueOf(rs.getString("type_contrat")),
                         rs.getDate("date_debut").toLocalDate(),
                         rs.getDate("date_fin").toLocalDate(),
-                        null
+                        client
                 );
+                contrat.setId(rs.getInt("id"));
                 contrats.add(contrat);
             }
         }
         return contrats;
     }
+
 }

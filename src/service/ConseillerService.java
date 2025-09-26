@@ -27,8 +27,9 @@ public class ConseillerService {
         return conseillerDAO.getAll();
     }
 
-    public void supprimerConseiller(int id) throws SQLException {
-        conseillerDAO.delete(id);
+
+    public boolean supprimerConseiller(int id) throws SQLException {
+        return conseillerDAO.delete(id);
     }
 
     public Optional<Conseiller> chercherParId(int id) throws SQLException {

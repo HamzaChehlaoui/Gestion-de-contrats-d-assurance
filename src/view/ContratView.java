@@ -101,17 +101,33 @@ public class ContratView {
             return;
         }
 
-        Contrat contrat = new Contrat(0, type, dateDebut, dateFin, client);
+        Contrat contrat = new Contrat( type, dateDebut, dateFin, client);
         contratService.ajouterContrat(contrat);
         System.out.println("Contrat ajouté ");
     }
+    private int lireEntier(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                int valeur = scanner.nextInt();
+                scanner.nextLine(); // vider le buffer
+                return valeur;
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+            }
+        }
+    }
+
 
     private void supprimerContrat() throws SQLException {
-        System.out.print("ID du contrat: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        contratService.supprimerContrat(id);
-        System.out.println("Contrat supprimé ");
+        int id = lireEntier("ID du contrat à supprimer: ");
+        boolean supprime = contratService.supprimerContrat(id);
+        if (supprime) {
+            System.out.println("Contrat supprimé !");
+        } else {
+            System.out.println("Aucun contrat trouvé avec l'ID " + id);
+        }
     }
 
     private void rechercherParId() throws SQLException {

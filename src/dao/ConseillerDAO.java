@@ -45,11 +45,14 @@ public class ConseillerDAO {
         return Optional.empty();
     }
 
-    public void delete(int id) throws SQLException {
+
+
+    public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM conseiller WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 

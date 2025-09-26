@@ -15,8 +15,7 @@ public class Contrat {
 
     private Client client;
 
-    public Contrat(int id, TypeContrat typeContrat, LocalDate dateDebut, LocalDate dateFin, Client client) {
-        this.id = id;
+    public Contrat(TypeContrat typeContrat, LocalDate dateDebut, LocalDate dateFin, Client client) {
         this.typeContrat = typeContrat;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
@@ -81,7 +80,7 @@ public class Contrat {
 
     @Override
     public String toString() {
-        return "Contrat #" + id + " | Type: " + typeContrat +
+        return " | Type: " + typeContrat +
                 " | Début: " + dateDebut + " | Fin: " + dateFin +
                 " | Nb sinistres: " + sinistres.size();
     }

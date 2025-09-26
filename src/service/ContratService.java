@@ -1,14 +1,18 @@
 package service;
 
+import dao.ClientDAO;
 import dao.ContratDAO;
+import model.Client;
 import model.Contrat;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ContratService {
     private ContratDAO contratDAO;
+    ClientDAO clientDAO = new ClientDAO();
 
     public ContratService() throws SQLException {
         this.contratDAO = new ContratDAO();
@@ -26,14 +30,24 @@ public class ContratService {
         return contratDAO.read(id);
     }
 
-    public void supprimerContrat(int id) throws SQLException {
-        contratDAO.delete(id);
+
+    public boolean supprimerContrat(int id) throws SQLException {
+        return contratDAO.delete(id);
     }
 
     public List<Contrat> contratsParClient(int clientId) throws SQLException {
-        return contratDAO.getAll()
-                .stream()
-                .filter(ct -> ct.getClient().getId() == clientId)
+        List<Contrat> allContrats = contratDAO.getAll();
+
+        Client client = clientDAO.read(clientId).orElse(null);
+        if (client == null) {
+            return Collections.emptyList();
+        }
+
+        return allContrats.stream()
+                .filter(ct -> ct.getClient() != null && ct.getClient().getId() == clientId)
                 .collect(Collectors.toList());
     }
+
+
+
 }

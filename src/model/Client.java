@@ -54,8 +54,8 @@ public class Client extends Person {
 
     @Override
     public String toString() {
-        return getNom() + " " + getPrenom()   +
-                " | Nb contrats: " + contrats.size() ;
+        return getNom() + " " + getPrenom()+ " "  + getEmail()
+               ;
     }
 
 }
