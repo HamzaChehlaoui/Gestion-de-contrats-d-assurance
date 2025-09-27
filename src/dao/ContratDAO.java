@@ -5,13 +5,14 @@ import model.Contrat;
 import model.enums.TypeContrat;
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 public class ContratDAO {
 
 
     private Connection conn;
-    ClientDAO clientDAO = new ClientDAO();
+    private final ClientDAO clientDAO = new ClientDAO();
 
     public ContratDAO() throws SQLException {
         this.conn = DBConnectionSingleton.getInstance().getConnection();
@@ -34,17 +35,23 @@ public class ContratDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Contrat contrat = new Contrat(
-                        TypeContrat.valueOf(rs.getString("type_contrat")),
-                        rs.getDate("date_debut").toLocalDate(),
-                        rs.getDate("date_fin").toLocalDate(),
-                        null
-                );
+                int contratId = rs.getInt("id");
+                TypeContrat typeContrat = TypeContrat.valueOf(rs.getString("type_contrat"));
+                LocalDate dateDebut = rs.getDate("date_debut").toLocalDate();
+                LocalDate dateFin = rs.getDate("date_fin").toLocalDate();
+
+                int clientId = rs.getInt("client_id");
+                Client client = clientDAO.read(clientId).orElse(null);
+
+                Contrat contrat = new Contrat(typeContrat, dateDebut, dateFin, client);
+                contrat.setId(contratId);
+
                 return Optional.of(contrat);
             }
         }
         return Optional.empty();
     }
+
 
     public void update(Contrat contrat) throws SQLException {
         String sql = "UPDATE contrat SET type_contrat = ?, date_debut = ?, date_fin = ?, client_id = ? WHERE id = ?";

@@ -77,8 +77,16 @@ public class SinistreView {
         }
 
         System.out.print("ID du contrat pour ce sinistre: ");
-        int contratId = scanner.nextInt();
-        scanner.nextLine();
+        String saisie = scanner.nextLine();
+
+        int contratId;
+        try {
+            contratId = Integer.parseInt(saisie);
+        } catch (NumberFormatException e) {
+            System.out.println("Veuillez entrer un nombre valide (ID du contrat) !");
+            return;
+        }
+
 
         Contrat contrat = contratService.chercherParId(contratId).orElse(null);
         if (contrat == null) {
@@ -114,13 +122,27 @@ public class SinistreView {
         sinistreService.ajouterSinistre(sinistre);
         System.out.println("Sinistre ajouté ");
     }
-
+    private int lireEntier(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                int valeur = scanner.nextInt();
+                scanner.nextLine(); // vider le buffer
+                return valeur;
+            } catch (InputMismatchException e) {
+                System.out.println("Veuillez entrer un nombre valide !");
+                scanner.nextLine();
+            }
+        }
+    }
     private void supprimerSinistre() throws SQLException {
-        System.out.print("ID du sinistre: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        sinistreService.supprimerSinistre(id);
-        System.out.println("Sinistre supprimé ");
+        int id = lireEntier("ID du sinistre à supprimer: ");
+        boolean supprime = sinistreService.supprimerSinistre(id);
+        if (supprime) {
+            System.out.println("Sinistre supprimé !");
+        } else {
+            System.out.println("Aucun sinistre trouvé avec l'ID " + id);
+        }
     }
 
     private void rechercherParId() throws SQLException {

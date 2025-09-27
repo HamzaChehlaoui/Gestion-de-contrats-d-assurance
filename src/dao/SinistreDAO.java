@@ -16,7 +16,6 @@ public class SinistreDAO {
         this.conn = DBConnectionSingleton.getInstance().getConnection();
     }
 
-    // إنشاء Sinistre
     public void create(Sinistre sinistre) throws SQLException {
         if (sinistre.getContrat() == null || sinistre.getContrat().getId() == 0) {
             throw new IllegalArgumentException("Un sinistre doit toujours être lié à un contrat valide.");
@@ -33,7 +32,6 @@ public class SinistreDAO {
 
             stmt.executeUpdate();
 
-            // جلب ID اللي تولد تلقائياً
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     sinistre.setId(rs.getInt(1));
@@ -42,7 +40,6 @@ public class SinistreDAO {
         }
     }
 
-    // قراءة Sinistre بواسطة ID
     public Optional<Sinistre> read(int id) throws SQLException {
         String sql = "SELECT * FROM sinistre WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,7 +67,6 @@ public class SinistreDAO {
         return Optional.empty();
     }
 
-    // تعديل Sinistre
     public void update(Sinistre sinistre) throws SQLException {
         if (sinistre.getContrat() == null || sinistre.getContrat().getId() == 0) {
             throw new IllegalArgumentException("Un sinistre doit toujours être lié à un contrat valide.");
@@ -89,16 +85,16 @@ public class SinistreDAO {
         }
     }
 
-    // حذف Sinistre
-    public void delete(int id) throws SQLException {
+
+    public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM sinistre WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
-    // جلب جميع Sinistres مع الربط بالعقود
     public List<Sinistre> getAll() throws SQLException {
         List<Sinistre> sinistres = new ArrayList<>();
         String sql = "SELECT * FROM sinistre";

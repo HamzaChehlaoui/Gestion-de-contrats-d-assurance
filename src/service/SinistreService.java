@@ -20,8 +20,8 @@ public class SinistreService {
         sinistreDAO.create(s);
     }
 
-    public void supprimerSinistre(int id) throws SQLException {
-        sinistreDAO.delete(id);
+    public boolean supprimerSinistre(int id) throws SQLException {
+        return sinistreDAO.delete(id);
     }
 
     public Optional<Sinistre> chercherParId(int id) throws SQLException {
